@@ -1,4 +1,4 @@
-package org.slowaner.pidfile
+package com.github.slowaner.scala.pidfile
 
 import java.io._
 import java.nio.file.Path
