@@ -8,10 +8,11 @@ import java.nio.file.Path
   */
 object PidFileControl {
   def lockInstance(file: File): Boolean = {
+    val absoluteFile = if (file.isAbsolute) file else file.getAbsoluteFile
     var locked = false
-    val lockFileName = if (file != null) file.getName else null
+    val lockFileName = if (absoluteFile != null) absoluteFile.getName else null
     try {
-      val randomAccessFile = new RandomAccessFile(file, "rw")
+      val randomAccessFile = new RandomAccessFile(absoluteFile, "rw")
       val fileLock = randomAccessFile.getChannel.tryLock()
       if (fileLock != null) {
         val bufWr = new BufferedWriter(new FileWriter(randomAccessFile.getFD))
@@ -21,7 +22,7 @@ object PidFileControl {
             fileLock.release()
             bufWr.close()
             randomAccessFile.close()
-            file.delete()
+            absoluteFile.delete()
           } catch {
             case e: Throwable =>
               println("Unable to remove lock file: " + lockFileName + e)
